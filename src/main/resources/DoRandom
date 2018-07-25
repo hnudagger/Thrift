@@ -1,0 +1,80 @@
+package com.ifeng.uimg.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class DoRandom {
+
+
+    public String dice(String[] keys, double[] values) {
+//        WeightCategory wc1 = new WeightCategory(keys[0], values[0]);
+//        WeightCategory wc2 = new WeightCategory(keys[1], values[1]);
+//        WeightCategory wc3 = new WeightCategory(keys[2], values[2]);
+//        categorys.add(wc1);
+//        categorys.add(wc2);
+//        categorys.add(wc3);
+        List<WeightCategory> categorys = new ArrayList<WeightCategory>();
+        Random random = new Random();
+        String result = null;
+
+        for(int i=0; i< keys.length; i++) {
+            WeightCategory wc = new WeightCategory(keys[i], values[i]);
+            categorys.add(wc);
+        }
+
+        Double weightSum = 0.0;
+        for (WeightCategory wc : categorys) {
+            weightSum += wc.getWeight();
+        }
+
+//        if (weightSum <= 0) {
+//            System.err.println("Error: weightSum=" + weightSum.toString());
+//            return;
+//        }
+
+        Double n = random.nextDouble()*weightSum; // n in [0, weightSum)
+        Double m = 0.0;
+        for (WeightCategory wc : categorys) {
+            if (m <= n && n < m + wc.getWeight()) {
+                result = wc.getCategory();
+                break;
+            }
+            m += wc.getWeight();
+        }
+        return result;
+    }
+}
+
+class WeightCategory {
+    private String category;
+    private Double weight;
+
+    public WeightCategory() {
+        super();
+    }
+
+    public WeightCategory(String category, Double weight) {
+        super();
+        this.setCategory(category);
+        this.setWeight(weight);
+    }
+
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+}
+

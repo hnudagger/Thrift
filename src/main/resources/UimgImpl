@@ -1,0 +1,912 @@
+// 随机标签是每个大类只有一个小类
+
+package com.ifeng.uimg.impl;
+
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+import com.ifeng.uimg.Interface.*;
+import org.apache.thrift.TException;
+
+import java.util.List;
+
+
+/**
+ * Created by liyi on 11/22/17.
+ *
+ * UserPages: uimg.uimge_userpages
+ * 纯随机0和1：uimg.uimge_app_dice
+ * 画像数据：uimge_allvalues
+ * 标签：uimg.uimge_app_dice_tag
+ */
+
+public class UimgImpl implements UimgService.Iface {
+
+    String[] CONTACT_POINTS = {"10.80.17.155"};
+    int PORT = 9042;
+
+    public void pushRecommends(List<Recommend> recommends) throws TException {
+        InsertCassanAppDice uimgeAPP = new InsertCassanAppDice();
+        InsertCassandraAllValues uimge_allvalues = new InsertCassandraAllValues();
+
+        // ****   Random dice：each major category have one and only one minor category *******
+        DoRandom doRandom = new DoRandom();
+        String[] k1 = {"101","102","103","104","105","106"};
+        double[] v1 = {0.171281176, 0.126062779, 0.152004494, 0.161486539, 0.257663287, 0.133749563};
+        String[] k2 = {"201","202"};
+        double[] v2 = {0.60336852,0.400583575};
+        String[] k3 = {"301","302","303","304","305"};
+        double[] v3 = {0.239896396,0.171365032,0.174666505,0.150687204,0.259352604 };
+        String[] k4 = {"401","402","403","404","405","406","407"};
+        double[] v4 = {0.24617171,0.123260836,0.140236013,0.122947721,0.092800194,0.109213506,0.161190915 };
+        String[] k5 = {"501","502","503","504"};
+        double[] v5 = {0.168386684,0.205621499,0.338473555,0.298317799  };
+        String[] k6 = {"601","602","603","604","605","606","607","608","609"};
+        double[] v6 = {0.012459592,0.022563553,0.003036001,0.012556647,0.006205595 ,0.019095393,0.00800201,0.020875565,0.001374366 };
+        String[] k7 = {"701","702","703","704","705","706","707"};
+        double[] v7 = {0.013280205 ,0.012619681,0.00485085 ,0.01030754 ,0.004928205,0.00522245 ,0.006614849 };
+        String[] k8 = {"801","802","803","804","805","806"};
+        double[] v8 = {0.006666426,0.009785375,0.047125219,0.016808297,0.037363793,0.056445649};
+        String[] k9 = {"901","902","903","904","905","906","907"};
+        double[] v9 = {0.002182931,0.000624762,0.026921568,0.001952623,0.011280139,0.003467835,0.004373981};
+        String[] k10 = {"1001","1002","1003","1004","1005","1006","1007"};
+        double[] v10 = {0.019680464,0.004346062,0.020377676,0.059806052,0.032260718,0.012074887,0.022156525 };
+        String[] k11 = {"1101","1102","1103","1104","1105","1106","1107","1108"};
+        double[] v11 = {0.0113497,0.013836993,0.005589908,0.008653396,0.013752892,0.003767345,0.011903048,0.014103872 };
+        String[] k12 = {"1201","1202","1203","1204","1205","1206"};
+        double[] v12 = {0.000385368,0.010524173,0.008411469,0.015324312,0.007263405,0.013715748};
+        String[] k13 = {"1301","1302","1303","1304","1305","1306","1307","1308","1309"};
+        double[] v13 = {0.014866323,0.037738669,0.015048553,0.002800883,0.033816873,0.110039674,0.010738963,0.021591162,0.001937551 };
+        String[] k14 = {"1401","1402","1403","1405","1406","1407","1408"};
+        double[] v14 = {0.09064917,0.024834485,0.022892781,0.018822767,0.003333229,0.0541362,0.054856499 };
+        String[] k15 = {"1501","1502","1503","1504"};
+        double[] v15 = {0.039582064,0.014691751,0.034147957,0.026023394};
+        String[] k16 = {"1601","1602","1603","1604","1605","1606","1607"};
+        double[] v16 = {0.006896256,0.024143661,0.007196232,0.001279371,0.000933325,0.027918437,0.015350347};
+        String[] k17 = {"1701","1702","1703"};
+        double[] v17 = {0.030911906,0.028811968,0.008453335 };
+        String[] k18 = {"1801","1802","1803","1804"};
+        double[] v18 = {0.040492569,0.0510159,0.040602677,0.060127776};
+
+        // *************************************************************************************
+
+        uimgeAPP.connect(CONTACT_POINTS, PORT);
+        uimge_allvalues.connect(CONTACT_POINTS, PORT);
+        uimgeAPP.createSchema();
+        uimge_allvalues.createSchema();
+        for(Recommend recommend:recommends) {
+            String t1 = doRandom.dice(k1, v1);
+            String t2 = doRandom.dice(k2, v2);
+            String t3 = doRandom.dice(k3, v3);
+            String t4 = doRandom.dice(k4, v4);
+            String t5 = doRandom.dice(k5, v5);
+            String t6 = doRandom.dice(k6, v6);
+            String t7 = doRandom.dice(k7, v7);
+            String t8 = doRandom.dice(k8, v8);
+            String t9 = doRandom.dice(k9, v9);
+            String t10 = doRandom.dice(k10, v10);
+            String t11 = doRandom.dice(k11, v11);
+            String t12 = doRandom.dice(k12, v12);
+            String t13 = doRandom.dice(k13, v13);
+            String t14 = doRandom.dice(k14, v14);
+            String t15 = doRandom.dice(k15, v15);
+            String t16 = doRandom.dice(k16, v16);
+            String t17 = doRandom.dice(k17, v17);
+            String t18 = doRandom.dice(k18, v18);
+
+            uimgeAPP.loadData(recommend.getUid(),t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18);
+            uimge_allvalues.loadData(recommend.getUid(),
+                    recommend.getFirst_in(),
+                    recommend.getGeneral_in(),
+                    recommend.getGeneral_loc(),
+                    recommend.getIp(),
+                    recommend.getIphone(),
+                    recommend.getLast_in(),
+                    recommend.getLast_t1(),
+                    recommend.getLast_t2(),
+                    recommend.getLast_t2_sourceSims(),
+                    recommend.getLast_t3(),
+                    recommend.getLast_ub_sourceSims(),
+                    recommend.getLast_ucombineTag(),
+                    recommend.getLast_utime(),
+                    recommend.getLastitems(),
+                    recommend.isLikevideo(),
+                    recommend.getLoc(),
+                    recommend.getRecent_t1(),
+                    recommend.getRecent_t2(),
+                    recommend.getRecent_t3(),
+                    recommend.getRecent_ucombineTag(),
+                    recommend.getS(),
+                    recommend.getT1(),
+                    recommend.getT2(),
+                    recommend.getT3(),
+                    recommend.getUa(),
+                    recommend.getUa_r(),
+                    recommend.getUa_v(),
+                    recommend.getUcombineTag(),
+                    recommend.getUmos(),
+                    recommend.getUmt(),
+                    recommend.getUser_schannel(),
+                    recommend.getUtime(),
+                    recommend.getUver()
+                    );
+        }
+        uimgeAPP.close();
+        uimge_allvalues.close();
+    }
+
+    public void pushUserPages(java.util.List<UserPage> userPages) throws org.apache.thrift.TException {
+
+        Session session;
+        Cluster cluster;
+        cluster = Cluster.builder()
+                .addContactPoints(CONTACT_POINTS).withPort(PORT)
+                .build();
+        session = cluster.connect("uimg");
+
+        session.execute(
+                "CREATE TABLE IF NOT EXISTS uimge_userpages (" +
+                        "userid text PRIMARY KEY," +
+                        "pagesid list<text>" +
+                        ");"
+        );
+
+        for(UserPage userpage:userPages) {
+            session.execute("insert into uimge_userpages(" +
+                            "userid, " +
+                            "pagesid) " +
+                            "VALUES (?,?) ",
+                    userpage.getUserId(),
+                    userpage.getPageIds()
+            );
+        }
+
+        session.close();
+        cluster.close();
+
+    }
+}
+
+
+class CreateAndInsertCassandra {
+
+    Session session;
+    Cluster cluster;
+
+    /**
+     * Initiates a connection to the cluster
+     * specified by the given contact point.
+     *
+     * @param contactPoints the contact points to use.
+     * @param port          the port to use.
+     */
+    void connect(String[] contactPoints, int port) {
+
+        cluster = Cluster.builder()
+                .addContactPoints(contactPoints).withPort(port)
+                .build();
+        session = cluster.connect("uimg");
+
+    }
+
+    /**
+     * Creates the schema (keyspace) and tables
+     */
+    void createSchema() {
+
+        session.execute(
+                "CREATE TABLE IF NOT EXISTS uimge_app_dice (" +
+                        "uid text PRIMARY KEY," +
+                        "c101 int, " +
+                        "c102 int, " +
+                        "c103 int, " +
+                        "c104 int, " +
+                        "c105 int, " +
+                        "c106 int, " +
+                        "c201 int, " +
+                        "c202 int, " +
+                        "c301 int, " +
+                        "c302 int, " +
+                        "c303 int, " +
+                        "c304 int, " +
+                        "c305 int, " +
+                        "c401 int, " +
+                        "c402 int, " +
+                        "c403 int, " +
+                        "c404 int, " +
+                        "c405 int, " +
+                        "c406 int, " +
+                        "c407 int, " +
+                        "c501 int, " +
+                        "c502 int, " +
+                        "c503 int, " +
+                        "c504 int, " +
+                        "c601 int, " +
+                        "c602 int, " +
+                        "c603 int, " +
+                        "c604 int, " +
+                        "c605 int, " +
+                        "c606 int, " +
+                        "c607 int, " +
+                        "c608 int, " +
+                        "c609 int, " +
+                        "c701 int, " +
+                        "c702 int, " +
+                        "c703 int, " +
+                        "c704 int, " +
+                        "c705 int, " +
+                        "c706 int, " +
+                        "c707 int, " +
+                        "c801 int, " +
+                        "c802 int, " +
+                        "c803 int, " +
+                        "c804 int, " +
+                        "c805 int, " +
+                        "c806 int, " +
+                        "c901 int, " +
+                        "c902 int, " +
+                        "c903 int, " +
+                        "c904 int, " +
+                        "c905 int, " +
+                        "c906 int, " +
+                        "c907 int, " +
+                        "c1001 int, " +
+                        "c1002 int, " +
+                        "c1003 int, " +
+                        "c1004 int, " +
+                        "c1005 int, " +
+                        "c1006 int, " +
+                        "c1007 int, " +
+                        "c1101 int, " +
+                        "c1102 int, " +
+                        "c1103 int, " +
+                        "c1104 int, " +
+                        "c1105 int, " +
+                        "c1106 int, " +
+                        "c1107 int, " +
+                        "c1108 int, " +
+                        "c1201 int, " +
+                        "c1202 int, " +
+                        "c1203 int, " +
+                        "c1204 int, " +
+                        "c1205 int, " +
+                        "c1206 int, " +
+                        "c1301 int, " +
+                        "c1302 int, " +
+                        "c1303 int, " +
+                        "c1304 int, " +
+                        "c1305 int, " +
+                        "c1306 int, " +
+                        "c1307 int, " +
+                        "c1308 int, " +
+                        "c1309 int, " +
+                        "c1401 int, " +
+                        "c1402 int, " +
+                        "c1403 int, " +
+                        "c1405 int, " +
+                        "c1406 int, " +
+                        "c1407 int, " +
+                        "c1408 int, " +
+                        "c1501 int, " +
+                        "c1502 int, " +
+                        "c1503 int, " +
+                        "c1504 int, " +
+                        "c1601 int, " +
+                        "c1602 int, " +
+                        "c1603 int, " +
+                        "c1604 int, " +
+                        "c1605 int, " +
+                        "c1606 int, " +
+                        "c1607 int, " +
+                        "c1701 int, " +
+                        "c1702 int, " +
+                        "c1703 int, " +
+                        "c1801 int, " +
+                        "c1802 int, " +
+                        "c1803 int, " +
+                        "c1804 int " +
+                        ");"
+        );
+    }
+
+    void loadData(String key) {
+
+        session.execute("insert into uimge_app_dice(uid, " +
+                        "c101, " +
+                        "c102, " +
+                        "c103, " +
+                        "c104, " +
+                        "c105, " +
+                        "c106, " +
+                        "c201, " +
+                        "c202, " +
+                        "c301, " +
+                        "c302, " +
+                        "c303, " +
+                        "c304, " +
+                        "c305, " +
+                        "c401, " +
+                        "c402, " +
+                        "c403, " +
+                        "c404, " +
+                        "c405, " +
+                        "c406, " +
+                        "c407, " +
+                        "c501, " +
+                        "c502, " +
+                        "c503, " +
+                        "c504, " +
+                        "c601, " +
+                        "c602, " +
+                        "c603, " +
+                        "c604, " +
+                        "c605, " +
+                        "c606, " +
+                        "c607, " +
+                        "c608, " +
+                        "c609, " +
+                        "c701, " +
+                        "c702, " +
+                        "c703, " +
+                        "c704, " +
+                        "c705, " +
+                        "c706, " +
+                        "c707, " +
+                        "c801, " +
+                        "c802, " +
+                        "c803, " +
+                        "c804, " +
+                        "c805, " +
+                        "c806, " +
+                        "c901, " +
+                        "c902, " +
+                        "c903, " +
+                        "c904, " +
+                        "c905, " +
+                        "c906, " +
+                        "c907, " +
+                        "c1001, " +
+                        "c1002, " +
+                        "c1003, " +
+                        "c1004, " +
+                        "c1005, " +
+                        "c1006, " +
+                        "c1007, " +
+                        "c1101, " +
+                        "c1102, " +
+                        "c1103, " +
+                        "c1104, " +
+                        "c1105, " +
+                        "c1106, " +
+                        "c1107, " +
+                        "c1108, " +
+                        "c1201, " +
+                        "c1202, " +
+                        "c1203, " +
+                        "c1204, " +
+                        "c1205, " +
+                        "c1206, " +
+                        "c1301, " +
+                        "c1302, " +
+                        "c1303, " +
+                        "c1304, " +
+                        "c1305, " +
+                        "c1306, " +
+                        "c1307, " +
+                        "c1308, " +
+                        "c1309, " +
+                        "c1401, " +
+                        "c1402, " +
+                        "c1403, " +
+                        "c1405, " +
+                        "c1406, " +
+                        "c1407, " +
+                        "c1408, " +
+                        "c1501, " +
+                        "c1502, " +
+                        "c1503, " +
+                        "c1504, " +
+                        "c1601, " +
+                        "c1602, " +
+                        "c1603, " +
+                        "c1604, " +
+                        "c1605, " +
+                        "c1606, " +
+                        "c1607, " +
+                        "c1701, " +
+                        "c1702, " +
+                        "c1703, " +
+                        "c1801, " +
+                        "c1802, " +
+                        "c1803, " +
+                        "c1804) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?) ",
+                key,
+                (int)(Math.random()/(1-0.171281175821899)),
+                (int)(Math.random()/(1-0.126062779384454)),
+                (int)(Math.random()/(1-0.152004494173711)),
+                (int)(Math.random()/(1-0.161486539381673)),
+                (int)(Math.random()/(1-0.257663286851333)),
+                (int)(Math.random()/(1-0.13374956300364)),
+//                (int)(Math.random()/(1-0.603368520387879)),
+                ((Math.random()/(1-0.603368520387879)>=1)?1:0),
+                (int)(Math.random()/(1-0.400583575420503)),
+                (int)(Math.random()/(1-0.239896395840649)),
+                (int)(Math.random()/(1-0.171365032251737)),
+                (int)(Math.random()/(1-0.174666505328891)),
+                (int)(Math.random()/(1-0.150687204016361)),
+                (int)(Math.random()/(1-0.259352604497843)),
+                (int)(Math.random()/(1-0.246171709853205)),
+                (int)(Math.random()/(1-0.123260836154619)),
+                (int)(Math.random()/(1-0.140236013226015)),
+                (int)(Math.random()/(1-0.122947720942214)),
+                (int)(Math.random()/(1-0.092800194379675)),
+                (int)(Math.random()/(1-0.109213505874569)),
+                (int)(Math.random()/(1-0.161190915092088)),
+                (int)(Math.random()/(1-0.168386683834826)),
+                (int)(Math.random()/(1-0.205621498654944)),
+                (int)(Math.random()/(1-0.338473555317146)),
+                (int)(Math.random()/(1-0.29831779869366)),
+                (int)(Math.random()/(1-0.0124595923340415)),
+                (int)(Math.random()/(1-0.0225635531496375)),
+                (int)(Math.random()/(1-0.00303600087695634)),
+                (int)(Math.random()/(1-0.0125566465031479)),
+                (int)(Math.random()/(1-0.00620559542398663)),
+                (int)(Math.random()/(1-0.0190953929493248)),
+                (int)(Math.random()/(1-0.00800201004634254)),
+                (int)(Math.random()/(1-0.0208755645845662)),
+                (int)(Math.random()/(1-0.00137436571342975)),
+                (int)(Math.random()/(1-0.0132802052432033)),
+                (int)(Math.random()/(1-0.0126196808884413)),
+                (int)(Math.random()/(1-0.00485084957468814)),
+                (int)(Math.random()/(1-0.0103075403250629)),
+                (int)(Math.random()/(1-0.00492820483835589)),
+                (int)(Math.random()/(1-0.00522244970421044)),
+                (int)(Math.random()/(1-0.00661484884130136)),
+                (int)(Math.random()/(1-0.00666642570863161)),
+                (int)(Math.random()/(1-0.00978537520406319)),
+                (int)(Math.random()/(1-0.0471252193188543)),
+                (int)(Math.random()/(1-0.0168082965336862)),
+                (int)(Math.random()/(1-0.0373637933014912)),
+                (int)(Math.random()/(1-0.0564456487073637)),
+                (int)(Math.random()/(1-0.00218293105233044)),
+                (int)(Math.random()/(1-0.000624761869839919)),
+                (int)(Math.random()/(1-0.0269215676010257)),
+                (int)(Math.random()/(1-0.00195262333232385)),
+                (int)(Math.random()/(1-0.0112801390969577)),
+                (int)(Math.random()/(1-0.00346783472269143)),
+                (int)(Math.random()/(1-0.00437398117457258)),
+                (int)(Math.random()/(1-0.0196804637427641)),
+                (int)(Math.random()/(1-0.00434606154765867)),
+                (int)(Math.random()/(1-0.0203776763358888)),
+                (int)(Math.random()/(1-0.059806052077964)),
+                (int)(Math.random()/(1-0.0322607184212011)),
+                (int)(Math.random()/(1-0.0120748867890152)),
+                (int)(Math.random()/(1-0.0221565250040189)),
+                (int)(Math.random()/(1-0.0113496996211073)),
+                (int)(Math.random()/(1-0.0138369926358995)),
+                (int)(Math.random()/(1-0.00558990772218569)),
+                (int)(Math.random()/(1-0.00865339609143246)),
+                (int)(Math.random()/(1-0.0137528920158329)),
+                (int)(Math.random()/(1-0.00376734461634664)),
+                (int)(Math.random()/(1-0.0119030481010638)),
+                (int)(Math.random()/(1-0.014103872419853)),
+                (int)(Math.random()/(1-0.000385368107077856)),
+                (int)(Math.random()/(1-0.0105241727316434)),
+                (int)(Math.random()/(1-0.00841146918298795)),
+                (int)(Math.random()/(1-0.0153243117467535)),
+                (int)(Math.random()/(1-0.00726340526855829)),
+                (int)(Math.random()/(1-0.013715748480559)),
+                (int)(Math.random()/(1-0.0148663226327156)),
+                (int)(Math.random()/(1-0.0377386691375566)),
+                (int)(Math.random()/(1-0.0150485526904777)),
+                (int)(Math.random()/(1-0.00280088322361051)),
+                (int)(Math.random()/(1-0.03381687307973)),
+                (int)(Math.random()/(1-0.11003967387524)),
+                (int)(Math.random()/(1-0.0107389626721187)),
+                (int)(Math.random()/(1-0.0215911618337274)),
+                (int)(Math.random()/(1-0.00193755072661729)),
+                (int)(Math.random()/(1-0.0906491696806121)),
+                (int)(Math.random()/(1-0.0248344852420294)),
+                (int)(Math.random()/(1-0.0228927806541111)),
+                (int)(Math.random()/(1-0.0188227669357401)),
+                (int)(Math.random()/(1-0.00333322907101081)),
+                (int)(Math.random()/(1-0.0541362001003181)),
+                (int)(Math.random()/(1-0.0548564989267641)),
+                (int)(Math.random()/(1-0.0395820636761818)),
+                (int)(Math.random()/(1-0.0146917508247716)),
+                (int)(Math.random()/(1-0.0341479572534706)),
+                (int)(Math.random()/(1-0.026023393642063)),
+                (int)(Math.random()/(1-0.00689625591639702)),
+                (int)(Math.random()/(1-0.024143660533087)),
+                (int)(Math.random()/(1-0.00719623190606126)),
+                (int)(Math.random()/(1-0.00127937110892876)),
+                (int)(Math.random()/(1-0.000933324504903992)),
+                (int)(Math.random()/(1-0.0279184372685369)),
+                (int)(Math.random()/(1-0.0153503465605963)),
+                (int)(Math.random()/(1-0.0309119063142851)),
+                (int)(Math.random()/(1-0.0288119678069559)),
+                (int)(Math.random()/(1-0.00845333524809989)),
+                (int)(Math.random()/(1-0.0404925691778111)),
+                (int)(Math.random()/(1-0.0510159004285739)),
+                (int)(Math.random()/(1-0.0406026770272143)),
+                (int)(Math.random()/(1-0.0601277758550474))
+         );
+    }
+
+    void querySchema() {
+
+        ResultSet results = session.execute(
+                "SELECT * FROM simplex.playlists " +
+                        "WHERE id = 2cc9ccb7-6221-4ccb-8387-f22b6a1b354d;");
+
+        System.out.printf("%-30s\t%-20s\t%-20s%n", "title", "album", "artist");
+        System.out.println("-------------------------------+-----------------------+--------------------");
+
+        for (Row row : results) {
+
+            System.out.printf("%-30s\t%-20s\t%-20s%n",
+                    row.getString("title"),
+                    row.getString("album"),
+                    row.getString("artist"));
+
+        }
+
+    }
+
+    void close() {
+        session.close();
+        cluster.close();
+    }
+
+}
+
+
+class InsertCassandraAllValues {
+
+    Session session;
+    Cluster cluster;
+
+    /**
+     * Initiates a connection to the cluster
+     * specified by the given contact point.
+     *
+     * @param contactPoints the contact points to use.
+     * @param port          the port to use.
+     */
+    void connect(String[] contactPoints, int port) {
+
+        cluster = Cluster.builder()
+                .addContactPoints(contactPoints).withPort(port)
+                .build();
+        session = cluster.connect("uimg");
+
+    }
+
+    /**
+     * Creates the schema (keyspace) and tables
+     * for this example.
+     */
+    void createSchema() {
+
+        session.execute(
+                "CREATE TABLE IF NOT EXISTS uimge_allvalues (" +
+                        "uid text PRIMARY KEY," +
+                        "first_in text," +
+                        "general_in text," +
+                        "general_loc text," +
+                        "ip list<text>," +
+                        "iphone text," +
+                        "last_in text," +
+                        "last_t1 list<text>," +
+                        "last_t2 list<text>," +
+                        "last_t2_sourceSims text," +
+                        "last_t3 list<text>," +
+                        "last_ub_sourceSims text," +
+                        "last_ucombineTag text," +
+                        "last_utime text," +
+                        "lastitems list<text>," +
+                        "likevideo boolean," +
+                        "loc text," +
+                        "recent_t1 list<text>," +
+                        "recent_t2 list<text>," +
+                        "recent_t3 list<text>," +
+                        "recent_ucombineTag text," +
+                        "s list<text>," +
+                        "t1 list<text>," +
+                        "t2 list<text>," +
+                        "t3 list<text>," +
+                        "ua text," +
+                        "ua_r text," +
+                        "ua_v text," +
+                        "ucombineTag text," +
+                        "umos text," +
+                        "umt text," +
+                        "user_schannel text," +
+                        "utime text," +
+                        "uver text" +
+                        ");"
+        );
+    }
+
+    /**
+     * Inserts data into the tables.
+     */
+
+    void loadData(String uid,
+                  String first_in,
+                  String general_in,
+                  String general_loc,
+                  List<String> ip,
+                  String iphone,
+                  String last_in,
+                  List<String> last_t1,
+                  List<String> last_t2,
+                  String last_t2_sourceSims,
+                  List<String> last_t3,
+                  String last_ub_sourceSims,
+                  String last_ucombineTag,
+                  String last_utime,
+                  List<String> lastitems,
+                  Boolean likevideo,
+                  String loc,
+                  List<String> recent_t1,
+                  List<String> recent_t2,
+                  List<String> recent_t3,
+                  String recent_ucombineTag,
+                  List<String> s,
+                  List<String> t1,
+                  List<String> t2,
+                  List<String> t3,
+                  String ua,
+                  String ua_r,
+                  String ua_v,
+                  String ucombineTag,
+                  String umos,
+                  String umt,
+                  String user_schannel,
+                  String utime,
+                  String uver
+                  ) {
+
+        session.execute("insert into uimge_allvalues(" +
+                        "uid, " +
+                        "first_in, " +
+                        "general_in, " +
+                        "general_loc, " +
+                        "ip, " +
+                        "iphone, " +
+                        "last_in, " +
+                        "last_t1, " +
+                        "last_t2, " +
+                        "last_t2_sourceSims, " +
+                        "last_t3, " +
+                        "last_ub_sourceSims, " +
+                        "last_ucombineTag, " +
+                        "last_utime, " +
+                        "lastitems, " +
+                        "likevideo, " +
+                        "loc, " +
+                        "recent_t1, " +
+                        "recent_t2, " +
+                        "recent_t3, " +
+                        "recent_ucombineTag, " +
+                        "s, " +
+                        "t1, " +
+                        "t2, " +
+                        "t3, " +
+                        "ua, " +
+                        "ua_r, " +
+                        "ua_v, " +
+                        "ucombineTag, " +
+                        "umos, " +
+                        "umt, " +
+                        "user_schannel, " +
+                        "utime, " +
+                        "uver) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?) ",
+                uid,
+                first_in,
+                general_in,
+                general_loc,
+                ip,
+                iphone,
+                last_in,
+                last_t1,
+                last_t2,
+                last_t2_sourceSims,
+                last_t3,
+                last_ub_sourceSims,
+                last_ucombineTag,
+                last_utime,
+                lastitems,
+                likevideo,
+                loc,
+                recent_t1,
+                recent_t2,
+                recent_t3,
+                recent_ucombineTag,
+                s,
+                t1,
+                t2,
+                t3,
+                ua,
+                ua_r,
+                ua_v,
+                ucombineTag,
+                umos,
+                umt,
+                user_schannel,
+                utime,
+                uver
+                );
+    }
+
+    void querySchema() {
+
+        ResultSet results = session.execute(
+                "SELECT * FROM simplex.playlists " +
+                        "WHERE id = 2cc9ccb7-6221-4ccb-8387-f22b6a1b354d;");
+
+        System.out.printf("%-30s\t%-20s\t%-20s%n", "title", "album", "artist");
+        System.out.println("-------------------------------+-----------------------+--------------------");
+
+        for (Row row : results) {
+
+            System.out.printf("%-30s\t%-20s\t%-20s%n",
+                    row.getString("title"),
+                    row.getString("album"),
+                    row.getString("artist"));
+
+        }
+
+    }
+
+    void close() {
+        session.close();
+        cluster.close();
+    }
+
+}
+
+
+class InsertCassanAppDice {
+
+    Session session;
+    Cluster cluster;
+
+    /**
+     * Initiates a connection to the cluster
+     * specified by the given contact point.
+     *
+     * @param contactPoints the contact points to use.
+     * @param port          the port to use.
+     */
+    void connect(String[] contactPoints, int port) {
+
+        cluster = Cluster.builder()
+                .addContactPoints(contactPoints).withPort(port)
+                .build();
+        session = cluster.connect("uimg");
+
+    }
+
+    /**
+     * Creates the schema (keyspace) and tables
+     */
+    void createSchema() {
+
+        session.execute(
+                "CREATE TABLE IF NOT EXISTS uimge_app_dice_tag (" +
+                        "uid text PRIMARY KEY," +
+                        "c1 text, " +
+                        "c2 text, " +
+                        "c3 text, " +
+                        "c4 text, " +
+                        "c5 text, " +
+                        "c6 text, " +
+                        "c7 text, " +
+                        "c8 text, " +
+                        "c9 text, " +
+                        "c10 text, " +
+                        "c11 text, " +
+                        "c12 text, " +
+                        "c13 text, " +
+                        "c14 text, " +
+                        "c15 text, " +
+                        "c16 text, " +
+                        "c17 text, " +
+                        "c18 text " +
+                        ");"
+        );
+    }
+
+    void loadData(String key, String t1, String t2, String t3, String t4, String t5,
+                  String t6, String t7, String t8, String t9, String t10, String t11,
+                  String t12, String t13, String t14, String t15, String t16, String t17, String t18) {
+
+        session.execute("insert into uimge_app_dice_tag(" +
+                        "uid, " +
+                        "c1, " +
+                        "c2, " +
+                        "c3, " +
+                        "c4, " +
+                        "c5, " +
+                        "c6, " +
+                        "c7, " +
+                        "c8, " +
+                        "c9, " +
+                        "c10, " +
+                        "c11, " +
+                        "c12, " +
+                        "c13, " +
+                        "c14, " +
+                        "c15, " +
+                        "c16, " +
+                        "c17, " +
+                        "c18) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?," +
+                        "?,?,?,?,?,?,?,?,?) ",
+                key,
+                t1,
+                t2,
+                t3,
+                t4,
+                t5,
+                t6,
+                t7,
+                t8,
+                t9,
+                t10,
+                t11,
+                t12,
+                t13,
+                t14,
+                t15,
+                t16,
+                t17,
+                t18
+        );
+    }
+
+    void querySchema() {
+
+        ResultSet results = session.execute(
+                "SELECT * FROM simplex.playlists " +
+                        "WHERE id = 2cc9ccb7-6221-4ccb-8387-f22b6a1b354d;");
+
+        System.out.printf("%-30s\t%-20s\t%-20s%n", "title", "album", "artist");
+        System.out.println("-------------------------------+-----------------------+--------------------");
+
+        for (Row row : results) {
+
+            System.out.printf("%-30s\t%-20s\t%-20s%n",
+                    row.getString("title"),
+                    row.getString("album"),
+                    row.getString("artist"));
+
+        }
+
+    }
+
+    void close() {
+        session.close();
+        cluster.close();
+    }
+
+}
+
